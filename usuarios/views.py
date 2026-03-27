@@ -3,6 +3,7 @@ from .serializers import UserSerializer
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken 
 
 @api_view(['POST'])
 def registro(request):
@@ -24,5 +25,11 @@ def login_view(request):
 
     if user is None:
         return Response({"error": "Credenciales incorrectas"}, status=400)
+    
+    refresh = RefreshToken.for_user(user)
 
-    return Response({"mensaje": "Login exitoso"})
+    return Response({
+        "access": str(refresh.access_token),
+        "refresh": str(refresh),
+        "username": user.username,
+    })
